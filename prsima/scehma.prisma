@@ -15,6 +15,7 @@ model Users {
     updatedAt DateTime @updatedAt @map("updatedAt")
 
     userinfos UserInfos?
+    resume    Resume?
 
     @@map("Users")
 }
@@ -31,11 +32,13 @@ model UserInfos {
 
 model Resume {
     resumeId      Int        @id @default(autoincrement()) @map("resumeId")
-    userId        Int        @map("userId")
+    userId        Int        @unique @map("userId")
     name          String     @map("name")
     selfIntroduce String     @map("selfIntroduce") @db.Text
     userName      String     @map("userName")
     status        TaskStatus @default(APPLY) @map("status")
+
+    user Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 enum TaskStatus {
