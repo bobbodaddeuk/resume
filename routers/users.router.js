@@ -35,6 +35,7 @@ router.post("/sign-up", async (req, res, next) => {
                data: {
                   email,
                   password: hashedPassword,
+                  name,
                },
             });
             const userInfo = await tx.userInfos.create({
