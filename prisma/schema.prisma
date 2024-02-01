@@ -21,22 +21,27 @@ model Users {
 }
 
 model UserInfos {
-    userInfosId Int      @id @default(autoincrement()) @map("userInfosId")
-    userId      Int      @unique @map("userId")
-    name        String   @map("name")
-    createdAt   DateTime @default(now()) @map("createdAt")
-    updatedAt   DateTime @updatedAt @map("updatedAt")
+    userInfosId  Int      @id @default(autoincrement()) @map("userInfosId")
+    userId       Int      @unique @map("userId")
+    name         String   @map("name")
+    age          Int?     @map("age")
+    gender       String?  @map("gender")
+    profileImage String?  @map("profileImage")
+    createdAt    DateTime @default(now()) @map("createdAt")
+    updatedAt    DateTime @updatedAt @map("updatedAt")
 
     user Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 model Resume {
-    resumeId      Int        @id @default(autoincrement()) @map("resumeId")
-    userId        Int        @unique @map("userId")
-    name          String     @map("name")
-    selfIntroduce String     @map("selfIntroduce") @db.Text
-    userName      String     @map("userName")
-    status        TaskStatus @default(APPLY) @map("status")
+    resumeId         Int        @id @default(autoincrement()) @map("resumeId")
+    userId           Int        @unique @map("userId")
+    title            String     @map("title")
+    author           String     @map("author")
+    status           TaskStatus @default(APPLY) @map("status")
+    selfIntroduction String     @map("selfIntroduction") @db.Text
+    createdAt        DateTime   @default(now()) @map("createdAt")
+    updatedAt        DateTime   @updatedAt @map("updatedAt")
 
     user Users @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }

@@ -3,6 +3,7 @@ import { prisma } from "../models/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Prisma } from "@prisma/client";
+import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -62,11 +63,44 @@ router.post("/sign-in", async (req, res, next) => {
    const user = await prisma.users.findFirst({ where: { email } });
 
    if (!user)
-      return res.status(401).json({ message: "존재하지 않는 이메일입니다." });
+      return res.status(412).json({ message: "존재하지 않는 이메일입니다." });
    if (!(await bcrypt.compare(password, user.password)))
-      return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
+      return res.status(412).json({ message: "비밀번호가 일치하지 않습니다." });
+
+   const accessToken = jwt.sign(
+      {
+         userId: user.userId,
+      },
+      process.env.SECRET_KEY,
+      {
+         expiresIn: "12h",
+      }
+   );
+   res.cookie("Authorization", `Bearer ${accessToken}`);
 
    return res.status(200).json({ message: "로그인에 성공하였습니다." });
+});
+
+// 내 정보 조회 API
+router.get("/users", authMiddleware, async (req, res, next) => {
+   const { userId } = req.user;
+   const user = await prisma.users.findFirst({
+      where: { userId: +userId },
+      select: {
+         userId: true,
+         email: true,
+         createAt: true,
+         updatedAt: true,
+         userInfos: {
+            select: {
+               name: true,
+               age: true,
+               gender: true,
+            },
+         },
+      },
+   });
+   return res.status(200).json({ data: user });
 });
 
 export default router;
