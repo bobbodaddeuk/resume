@@ -85,7 +85,6 @@ router.post("/sign-in", async (req, res, next) => {
 router.get("/users", authMiddleware, async (req, res, next) => {
    const { userId } = req.user;
 
-   console.log(userId);
    const user = await prisma.users.findFirst({
       where: { userId: +userId },
       select: {

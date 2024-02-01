@@ -37,7 +37,6 @@ model Resume {
     resumeId         Int        @id @default(autoincrement()) @map("resumeId")
     userId           Int        @unique @map("userId")
     title            String     @map("title")
-    author           String     @map("author")
     status           TaskStatus @default(APPLY) @map("status")
     selfIntroduction String     @map("selfIntroduction") @db.Text
     createdAt        DateTime   @default(now()) @map("createdAt")
