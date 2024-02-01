@@ -110,7 +110,7 @@ router.get("/resume/:resumeId", authMiddleware, async (req, res, next) => {
             },
             resume: {
                where: {
-                  resumeId: 1,
+                  resumeId: +req.params.resumeId,
                },
                select: {
                   userId: true,
