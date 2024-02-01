@@ -84,18 +84,21 @@ router.post("/sign-in", async (req, res, next) => {
 // 내 정보 조회 API
 router.get("/users", authMiddleware, async (req, res, next) => {
    const { userId } = req.user;
+
+   console.log(userId);
    const user = await prisma.users.findFirst({
       where: { userId: +userId },
       select: {
          userId: true,
          email: true,
-         createAt: true,
+         createdAt: true,
          updatedAt: true,
          userInfos: {
             select: {
                name: true,
                age: true,
                gender: true,
+               profileImage: true,
             },
          },
       },

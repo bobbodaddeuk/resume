@@ -14,7 +14,7 @@ model Users {
     createdAt DateTime @default(now()) @map("createdAt")
     updatedAt DateTime @updatedAt @map("updatedAt")
 
-    userinfos UserInfos?
+    userInfos UserInfos?
     resume    Resume?
 
     @@map("Users")
