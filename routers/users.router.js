@@ -22,7 +22,7 @@ router.post("/sign-up", async (req, res, next) => {
       if (password.length < 6) {
          return res
             .status(400)
-            .json({ message: "비밀번호는 6자 이상이여야 합니다." });
+            .json({ message: "비밀번호는 6자 이상이어야 합니다." });
       }
       if (password !== confirmPassword)
          return res
@@ -51,7 +51,8 @@ router.post("/sign-up", async (req, res, next) => {
          }
       );
       return res.status(201).json({
-         message: "회원가입이 완료되었습니다.",
+         data: email,
+         name,
       });
    } catch (err) {
       next(err);
