@@ -51,7 +51,7 @@ router.post("/sign-up", async (req, res, next) => {
          }
       );
       return res.status(201).json({
-         data: email,
+         email,
          name,
       });
    } catch (err) {

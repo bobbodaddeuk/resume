@@ -148,6 +148,8 @@ router.get("/resume", authMiddleware, async (req, res, next) => {
          resumeId: true,
          userId: true,
          title: true,
+         selfIntroduction: true,
+         status: true,
          createdAt: true,
          updatedAt: true,
          user: {
