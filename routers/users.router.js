@@ -77,6 +77,12 @@ router.post("/sign-up", async (req, res, next) => {
 router.post("/sign-in", async (req, res, next) => {
    const { email, password } = req.body;
    const user = await prisma.users.findFirst({ where: { email } });
+   if (!email) {
+      return res.status(400).json({ message: "이메일은 입력해주세요." });
+   }
+   if (!password) {
+      return res.status(400).json({ message: "비밀번호를 입력해주세요." });
+   }
 
    if (!user)
       return res.status(412).json({ message: "존재하지 않는 이메일입니다." });
@@ -94,7 +100,7 @@ router.post("/sign-in", async (req, res, next) => {
    );
    res.cookie("Authorization", `Bearer ${accessToken}`);
 
-   return res.status(200).json({ message: "로그인에 성공하였습니다." });
+   return res.status(200).json({ accessToken });
 });
 
 // 내 정보 조회 API
