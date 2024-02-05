@@ -174,9 +174,10 @@ router.get("/resume", authMiddleware, async (req, res, next) => {
          },
       },
       orderBy: {
-         [orderKey]: orderValue,
+         [orderKey]: orderValue.toLowerCase(),
       },
    });
+
    return res.status(200).json({ data: resume });
 });
 
