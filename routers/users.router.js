@@ -15,6 +15,20 @@ router.post("/sign-up", async (req, res, next) => {
       const isExistUser = await prisma.users.findFirst({
          where: { email },
       });
+      if (!email) {
+         return res.status(400).json({ message: "이메일은 입력해주세요." });
+      }
+      if (!password) {
+         return res.status(400).json({ message: "비밀번호를 입력해주세요." });
+      }
+      if (!confirmPassword) {
+         return res
+            .status(400)
+            .json({ message: "비밀번호 확인을 입력해주세요." });
+      }
+      if (!name) {
+         return res.status(400).json({ message: "이름을 입력해주세요" });
+      }
       if (isExistUser)
          return res
             .status(409)
