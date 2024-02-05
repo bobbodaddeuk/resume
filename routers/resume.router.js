@@ -143,6 +143,21 @@ router.get("/resume/:resumeId", authMiddleware, async (req, res, next) => {
 
 // 모든 이력서 목록 조회
 router.get("/resume", authMiddleware, async (req, res, next) => {
+   const orderKey = req.query.orderKey ?? "resumeId";
+   const orderValue = req.query.orderValue ?? "desc";
+
+   if (!["resumeId", "status"].includes(orderKey)) {
+      return res.status(400).json({
+         success: false,
+         message: "orderKey가 올바르지 않습니다.",
+      });
+   }
+   if (!["asc", "desc"].includes(orderValue.toLowerCase())) {
+      return res.status(400).json({
+         success: false,
+         message: "orderValue가 올바르지 않습니다.",
+      });
+   }
    const resume = await prisma.resume.findMany({
       select: {
          resumeId: true,
@@ -159,7 +174,7 @@ router.get("/resume", authMiddleware, async (req, res, next) => {
          },
       },
       orderBy: {
-         createdAt: "desc",
+         [orderKey]: orderValue,
       },
    });
    return res.status(200).json({ data: resume });
