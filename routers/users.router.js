@@ -98,7 +98,6 @@ router.post("/sign-in", async (req, res, next) => {
          expiresIn: "12h",
       }
    );
-
    return res.status(200).json({ accessToken });
 });
 
