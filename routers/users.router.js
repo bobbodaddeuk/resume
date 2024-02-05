@@ -49,7 +49,6 @@ router.post("/sign-up", async (req, res, next) => {
                data: {
                   email,
                   password: hashedPassword,
-                  name,
                },
             });
             const userInfo = await tx.userInfos.create({
@@ -75,54 +74,66 @@ router.post("/sign-up", async (req, res, next) => {
 
 // 로그인 API
 router.post("/sign-in", async (req, res, next) => {
-   const { email, password } = req.body;
-   const user = await prisma.users.findFirst({ where: { email } });
-   if (!email) {
-      return res.status(400).json({ message: "이메일은 입력해주세요." });
-   }
-   if (!password) {
-      return res.status(400).json({ message: "비밀번호를 입력해주세요." });
-   }
-
-   if (!user)
-      return res.status(401).json({ message: "존재하지 않는 이메일입니다." });
-   if (!(await bcrypt.compare(password, user.password)))
-      return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
-
-   const accessToken = jwt.sign(
-      {
-         userId: user.userId,
-      },
-      process.env.SECRET_KEY,
-      {
-         expiresIn: "12h",
+   try {
+      const { email, password } = req.body;
+      const user = await prisma.users.findFirst({ where: { email } });
+      if (!email) {
+         return res.status(400).json({ message: "이메일은 입력해주세요." });
       }
-   );
-   return res.status(200).json({ accessToken });
+      if (!password) {
+         return res.status(400).json({ message: "비밀번호를 입력해주세요." });
+      }
+
+      if (!user)
+         return res
+            .status(401)
+            .json({ message: "존재하지 않는 이메일입니다." });
+      if (!(await bcrypt.compare(password, user.password)))
+         return res
+            .status(401)
+            .json({ message: "비밀번호가 일치하지 않습니다." });
+
+      const accessToken = jwt.sign(
+         {
+            userId: user.userId,
+         },
+         process.env.SECRET_KEY,
+         {
+            expiresIn: "12h",
+         }
+      );
+      return res.status(200).json({ accessToken });
+   } catch (err) {
+      next(err);
+   }
 });
 
 // 내 정보 조회 API
 router.get("/users", authMiddleware, async (req, res, next) => {
-   const { userId } = req.user;
+   try {
+      const { userId } = req.user;
 
-   const user = await prisma.users.findFirst({
-      where: { userId: +userId },
-      select: {
-         userId: true,
-         email: true,
-         createdAt: true,
-         updatedAt: true,
-         userInfos: {
-            select: {
-               name: true,
-               age: true,
-               gender: true,
-               profileImage: true,
+      const user = await prisma.users.findFirst({
+         where: { userId: +userId },
+         select: {
+            userId: true,
+            email: true,
+            createdAt: true,
+            updatedAt: true,
+            userInfos: {
+               select: {
+                  name: true,
+                  age: true,
+                  gender: true,
+                  profileImage: true,
+               },
             },
          },
-      },
-   });
-   return res.status(200).json({ data: user });
+      });
+      return res.status(200).json({ data: user });
+   } catch (err) {
+      next(err);
+   }
 });
 
 export default router;
