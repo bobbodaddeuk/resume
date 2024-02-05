@@ -50,7 +50,7 @@ router.patch("/resume/:resumeId", authMiddleware, async (req, res, next) => {
       ];
       if (!modifyData.status)
          return res
-            .status(412)
+            .status(400)
             .json({ message: "이력서의 상태를 입력하세요." });
 
       const modifiedData = await prisma.resume.update({

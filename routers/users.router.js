@@ -35,7 +35,7 @@ router.post("/sign-up", async (req, res, next) => {
             .json({ message: "이미 존재하는 사용자입니다." });
       if (password.length < 6) {
          return res
-            .status(400)
+            .status(422)
             .json({ message: "비밀번호는 6자 이상이어야 합니다." });
       }
       if (password !== confirmPassword)
@@ -85,9 +85,9 @@ router.post("/sign-in", async (req, res, next) => {
    }
 
    if (!user)
-      return res.status(412).json({ message: "존재하지 않는 이메일입니다." });
+      return res.status(401).json({ message: "존재하지 않는 이메일입니다." });
    if (!(await bcrypt.compare(password, user.password)))
-      return res.status(412).json({ message: "비밀번호가 일치하지 않습니다." });
+      return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
 
    const accessToken = jwt.sign(
       {
