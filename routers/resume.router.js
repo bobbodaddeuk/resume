@@ -23,7 +23,7 @@ router.post("/resume", authMiddleware, async (req, res, next) => {
 });
 
 // 이력서 수정 API
-router.patch("/resume/:resumeId", authMiddleware, async (req, res, next) => {
+router.patch("/resumes/:resumeId", authMiddleware, async (req, res, next) => {
    try {
       const { resumeId } = req.params;
       const modifyData = req.body;
@@ -50,7 +50,7 @@ router.patch("/resume/:resumeId", authMiddleware, async (req, res, next) => {
       ];
       if (!modifyData.status)
          return res
-            .status(412)
+            .status(400)
             .json({ message: "이력서의 상태를 입력하세요." });
 
       const modifiedData = await prisma.resume.update({
@@ -66,7 +66,7 @@ router.patch("/resume/:resumeId", authMiddleware, async (req, res, next) => {
 });
 
 // 이력서 삭제 API
-router.delete("/resume/:resumeId", authMiddleware, async (req, res, next) => {
+router.delete("/resumes/:resumeId", authMiddleware, async (req, res, next) => {
    try {
       const { resumeId } = req.params;
       const isExistResume = await prisma.resume.findFirst({
@@ -91,7 +91,7 @@ router.delete("/resume/:resumeId", authMiddleware, async (req, res, next) => {
 });
 
 // 이력서 상세 조회 API
-router.get("/resume/:resumeId", authMiddleware, async (req, res, next) => {
+router.get("/resumes/:resumeId", async (req, res, next) => {
    try {
       const { resumeId } = req.params;
       var resume = {};
@@ -142,25 +142,47 @@ router.get("/resume/:resumeId", authMiddleware, async (req, res, next) => {
 });
 
 // 모든 이력서 목록 조회
-router.get("/resume", authMiddleware, async (req, res, next) => {
-   const resume = await prisma.resume.findMany({
-      select: {
-         resumeId: true,
-         userId: true,
-         title: true,
-         createdAt: true,
-         updatedAt: true,
-         user: {
-            select: {
-               name: true,
+router.get("/resume", async (req, res, next) => {
+   try {
+      const orderKey = req.query.orderKey ?? "resumeId";
+      const orderValue = req.query.orderValue ?? "desc";
+
+      if (!["resumeId", "status"].includes(orderKey)) {
+         return res.status(400).json({
+            success: false,
+            message: "orderKey가 올바르지 않습니다.",
+         });
+      }
+      if (!["asc", "desc"].includes(orderValue.toLowerCase())) {
+         return res.status(400).json({
+            success: false,
+            message: "orderValue가 올바르지 않습니다.",
+         });
+      }
+      const resume = await prisma.resume.findMany({
+         select: {
+            resumeId: true,
+            userId: true,
+            title: true,
+            selfIntroduction: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+            user: {
+               select: {
+                  name: true,
+               },
             },
          },
-      },
-      orderBy: {
-         createdAt: "desc",
-      },
-   });
-   return res.status(200).json({ data: resume });
+         orderBy: {
+            [orderKey]: orderValue.toLowerCase(),
+         },
+      });
+
+      return res.status(200).json({ data: resume });
+   } catch (err) {
+      next(err);
+   }
 });
 
 export default router;

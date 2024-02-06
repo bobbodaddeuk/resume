@@ -3,12 +3,13 @@ import jwt from "jsonwebtoken";
 
 export default async function (req, res, next) {
    try {
-      const { Authorization } = req.cookies;
-      if (!Authorization) throw new Error("로그인이 필요합니다.");
+      const { authorization } = req.headers;
+      if (!authorization) throw new Error("인증 정보가 일치하지 않습니다.");
 
-      const [tokenType, token] = Authorization.split(" ");
+      const [tokenType, token] = authorization.split(" ");
       if (tokenType !== "Bearer")
-         throw new Error("토큰 타입이 일치하지 않습니다.");
+         throw new Error("인증 정보가 올바르지 않습니다.");
+      if (!token) throw new Error("인증 정보가 올바르지 않습니다.");
 
       const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
 
