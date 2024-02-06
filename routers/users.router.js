@@ -7,7 +7,72 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// 회원가입 API
+/**
+ * @swagger
+ * /users/sign-up:
+ *   post:
+ *     summary: 회원가입 API
+ *     description: 이메일/패스워드를 통해 회원가입을 시도하는 API
+ *     parameters:
+ *       - in: body
+ *         type: object
+ *         description: 회원가입 요청 body data
+ *         schema:
+ *           properties:
+ *             email:
+ *               type: string
+ *               description: 이메일
+ *               examples: 'email@gmail.com'
+ *               required: false
+ *             password:
+ *               type: string
+ *               description: 비밀번호
+ *               examples: '123123'
+ *               required: false
+ *             confirmPassword:
+ *               type: string
+ *               description: 비밀번호 확인
+ *               examples: '123123'
+ *               required: false
+ *             name:
+ *               type: string
+ *               description:  이름
+ *               examples: '홍길동'
+ *               required: true
+ *
+ *     responses:
+ *       '201':
+ *          description: 정상적인 회원가입 완료
+ *          content:
+ *             json:
+ *                schema:
+ *                   type: object
+ *                   properties:
+ *                      email:
+ *                         type: string
+ *                         description: 가입 이메일
+ *                         required: false
+ *                      name:
+ *                         type: string
+ *                         description: 가입 이름
+ *                         required: true
+ *
+ *       '400':
+ *          description: 정상적인 회원가입 완료
+ *          content:
+ *             json:
+ *                schema:
+ *                   type: object
+ *                   properties:
+ *                      success:
+ *                         type: boolean
+ *                         description: 성공 완료 여부
+ *                         required: true
+ *                      message:
+ *                         type: string
+ *                         description: 오류 메세지
+ *                         required: true
+ */
 router.post("/sign-up", async (req, res, next) => {
    try {
       const { email, name, password, confirmPassword } = req.body;
@@ -49,6 +114,7 @@ router.post("/sign-up", async (req, res, next) => {
                data: {
                   email,
                   password: hashedPassword,
+                  name,
                },
             });
             const userInfo = await tx.userInfos.create({
